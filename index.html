@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html,body{margin:0}</style>
+<title>Baaba’s Prompt Raffle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500&family=Pinyon+Script&display=swap">
+<style>
+/* Layout: one centred slip styled like the name card (pastel wash, dark edge, copper inner line) over a lighter wash with copper veins. Single light look by choice. */
+:root {
+  --bg: #f5e9f2;
+  --ink: #2b2030;
+  --ink-soft: #5a4a5e;
+  --line: #3a2a30;
+  --copper: #c47a2c;
+  --gold-a: #f0d08a;
+  --gold-b: #c98a3a;
+  --blush: #f5b5c8;
+  --lav: #c9b3e6;
+  --sky: #a6bde9;
+  --peach: #f9cdb6;
+  --paper: #fbf1f4;
+  --btn-bg: #3a2a30;
+  --btn-fg: #fff6ef;
+  --chip: rgba(255, 250, 250, 0.62);
+  --font-display: "Pinyon Script", "Snell Roundhand", cursive;
+  --font-text: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-ui: "Jost", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(75% 30% at 4% 3%, var(--sky) 0%, transparent 70%),
+    radial-gradient(60% 26% at 100% 12%, var(--lav) 0%, transparent 70%),
+    radial-gradient(70% 32% at 0% 34%, var(--blush) 0%, transparent 70%),
+    radial-gradient(60% 28% at 100% 50%, var(--sky) 0%, transparent 72%),
+    radial-gradient(70% 32% at 2% 70%, var(--lav) 0%, transparent 70%),
+    radial-gradient(70% 30% at 98% 86%, var(--blush) 0%, transparent 70%),
+    radial-gradient(60% 22% at 22% 100%, var(--peach) 0%, transparent 70%);
+  background-repeat: no-repeat;
+  color: var(--ink);
+  font-family: var(--font-text);
+  padding-block: 28px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { position: relative; max-width: 30rem; margin: 0 auto; }
+.veins {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  color: var(--copper); opacity: 0.9; pointer-events: none; z-index: 0;
+}
+.page > *:not(.veins) { position: relative; z-index: 1; }
+
+header { text-align: center; padding-bottom: 22px; }
+h1 {
+  margin: 0;
+  font: 400 clamp(3rem, 14vw, 4.4rem)/1.05 var(--font-display);
+  color: var(--ink);
+  text-wrap: balance;
+}
+.sub {
+  margin: 10px 0 0;
+  font: 500 0.72rem/1.4 var(--font-ui);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.slip {
+  position: relative;
+  min-height: 15.5rem;
+  display: flex; flex-direction: column; gap: 18px; justify-content: space-between;
+  padding: 24px 22px 26px;
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(65% 75% at 8% 18%, var(--sky) 0%, transparent 72%),
+    radial-gradient(60% 70% at 96% 24%, var(--lav) 0%, transparent 72%),
+    radial-gradient(70% 70% at 40% 104%, var(--blush) 0%, transparent 72%),
+    radial-gradient(40% 50% at 92% 96%, var(--peach) 0%, transparent 72%);
+  border: 2px solid var(--line);
+  border-radius: 2px;
+  box-shadow: 0 14px 30px -18px rgba(58, 42, 48, 0.6);
+}
+.slip::after {
+  content: ""; position: absolute; inset: 5px; pointer-events: none;
+  border: 1px solid var(--copper); border-radius: 1px;
+}
+.slip.golden {
+  border-color: var(--gold-b);
+  background-image:
+    linear-gradient(135deg, rgba(240, 208, 138, 0.55), rgba(255, 251, 249, 0) 60%),
+    radial-gradient(65% 75% at 8% 18%, var(--sky) 0%, transparent 72%),
+    radial-gradient(60% 70% at 96% 24%, var(--lav) 0%, transparent 72%),
+    radial-gradient(70% 70% at 40% 104%, var(--blush) 0%, transparent 72%);
+}
+.slip.golden::after { border-color: var(--gold-b); border-width: 2px; }
+.slip-top {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  font: 500 0.7rem/1.3 var(--font-ui);
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft);
+}
+.slip-top .num { font-variant-numeric: tabular-nums; }
+.prompt {
+  margin: 0; align-self: center;
+  font: 600 clamp(1.45rem, 6.4vw, 1.85rem)/1.28 var(--font-text);
+  text-align: center; text-wrap: balance; color: var(--ink);
+}
+.prompt.first-line { font-style: italic; }
+.prompt.empty { font-family: var(--font-display); font-weight: 400; font-size: clamp(2.1rem, 9.5vw, 2.8rem); line-height: 1.15; }
+.hint {
+  margin: 0; text-align: center;
+  font: 400 0.92rem/1.45 var(--font-ui); color: var(--ink-soft);
+}
+.reveal { animation: rise 0.5s ease both; }
+.shuffling .prompt { opacity: 0.25; filter: blur(2px); }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+.controls { display: flex; flex-direction: column; align-items: center; gap: 12px; padding-top: 22px; }
+.btn {
+  appearance: none; cursor: pointer; width: 100%;
+  padding: 15px 24px; border-radius: 999px; border: 0;
+  background: var(--btn-bg); color: var(--btn-fg);
+  font: 500 0.86rem/1 var(--font-ui); letter-spacing: 0.16em; text-transform: uppercase;
+  box-shadow: 0 10px 22px -12px rgba(58, 42, 48, 0.75);
+  transition: transform 0.15s ease;
+}
+.btn:active { transform: scale(0.98); }
+.btn[disabled] { opacity: 0.55; cursor: default; }
+.link {
+  appearance: none; cursor: pointer; background: none; border: 0; padding: 6px 4px;
+  font: 400 0.9rem/1.2 var(--font-ui); color: var(--ink-soft);
+  text-decoration: underline; text-underline-offset: 4px;
+}
+.left { margin: 0; font: 500 0.72rem/1.3 var(--font-ui); letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 2px solid var(--copper); outline-offset: 3px; }
+
+.history { margin-top: 30px; text-align: center; }
+.history h2 {
+  margin: 0 0 12px;
+  font: 500 0.72rem/1.3 var(--font-ui); letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft);
+}
+.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.chip {
+  appearance: none; cursor: pointer; min-width: 2.6rem; padding: 8px 12px;
+  background: var(--chip); color: var(--ink);
+  border: 1px solid var(--copper); border-radius: 999px;
+  font: 500 0.82rem/1 var(--font-ui); font-variant-numeric: tabular-nums;
+}
+.chip[aria-current="true"] { background: var(--btn-bg); color: var(--btn-fg); border-color: var(--btn-bg); }
+.chip.gold { border-color: var(--gold-b); }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { animation: none; }
+  .btn { transition: none; }
+}
+</style>
+
+</head>
+<body>
+<div class="page">
+  <svg class="veins" viewBox="0 0 400 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <g stroke-width="2.2">
+        <path d="M-10 110 C30 90 55 135 95 125 S150 95 175 135 S205 190 185 225 S150 250 168 290"/>
+        <path d="M410 300 C375 285 355 330 322 318 S275 350 292 388 S335 410 318 450 S280 480 296 520"/>
+        <path d="M-10 640 C25 615 62 665 98 648 S145 610 172 640 S190 700 165 730 S130 760 142 800"/>
+        <path d="M410 770 C378 750 352 790 318 778 S270 748 246 778 S240 825 266 855"/>
+        <path d="M96 58 C125 80 150 55 178 76 S210 90 230 68"/>
+      </g>
+      <g stroke-width="1.5">
+        <path d="M95 125 C105 150 90 170 108 190"/>
+        <path d="M175 135 C195 120 215 128 228 112"/>
+        <path d="M185 225 C165 230 150 245 138 238"/>
+        <path d="M322 318 C335 345 318 365 332 385"/>
+        <path d="M292 388 C275 380 262 392 250 384"/>
+        <path d="M318 450 C335 455 350 470 362 462"/>
+        <path d="M98 648 C90 672 104 690 92 712"/>
+        <path d="M172 640 C190 628 208 636 220 624"/>
+        <path d="M165 730 C185 735 198 750 205 770"/>
+        <path d="M318 778 C322 802 306 818 312 838"/>
+        <path d="M246 778 C230 770 214 780 204 770"/>
+      </g>
+    </g>
+  </svg>
+
+  <header>
+    <h1>Baaba&rsquo;s Prompt Raffle</h1>
+    <p class="sub">Fifty slips &middot; draw one &middot; write</p>
+  </header>
+
+  <main>
+    <section id="slip" class="slip" aria-live="polite" aria-label="Your slip">
+      <div class="slip-top"><span id="tag">The jar</span><span id="num" class="num">50 slips</span></div>
+      <p id="prompt" class="prompt empty">Ready when you are, Baaba</p>
+      <p id="hint" class="hint">Draw a slip, Baaba, then write for as long as it holds you. There are no wrong answers.</p>
+    </section>
+
+    <div class="controls">
+      <button id="draw" class="btn" type="button">Draw a slip</button>
+      <p id="left" class="left">50 slips in the jar</p>
+      <button id="putback" class="link" type="button" hidden>Put this slip back</button>
+    </div>
+
+    <section id="history" class="history" hidden>
+      <h2 id="hist-title">Slip you have drawn</h2>
+      <ul id="chips" class="chips"></ul>
+      <button id="reset" class="link" type="button" style="margin-top:16px">Start over</button>
+    </section>
+  </main>
+</div>
+
+<script>
+(function () {
+  var PROMPTS = [
+    ["Character", "A character finds a letter addressed to them in their own handwriting."],
+    ["Character", "Someone who has never told a lie tells one today."],
+    ["Character", "Two strangers share an umbrella and discover they are connected."],
+    ["Character", "A shopkeeper sells things that are not objects, such as lost afternoons."],
+    ["Character", "Describe a villain on the best day of their life."],
+    ["Character", "A lighthouse keeper receives a message from a ship that sank a hundred years ago."],
+    ["Character", "Write about a child who can hear what the plants are saying."],
+    ["Character", "A retired thief is asked to steal something that belongs to nobody."],
+    ["Character", "Your character wakes up and everyone has forgotten their name except one person."],
+    ["Character", "A baker whose bread makes people remember what they would rather forget."],
+    ["Character", "Two rivals are stranded together overnight."],
+    ["Character", "A ghost who is afraid of the living."],
+
+    ["Setting", "A town where it rains something other than water."],
+    ["Setting", "A library that rearranges itself every night."],
+    ["Setting", "The last train of the night stops somewhere that is not on the map."],
+    ["Setting", "A garden that only blooms when someone tells the truth."],
+    ["Setting", "A house that remembers everyone who ever lived in it."],
+    ["Setting", "A market that appears only at dusk, and only for people who are lost."],
+    ["Setting", "An island where the tide never goes out."],
+    ["Setting", "A café where every table sits in a different century."],
+    ["Setting", "A staircase that leads somewhere new each time it is climbed."],
+    ["Setting", "A village where everyone shares the same dream each night."],
+    ["Setting", "A museum of things people have lost."],
+    ["Setting", "A rooftop at three in the morning, in a city that never sleeps."],
+
+    ["First line", "“The map was wrong, and that was the good news.”"],
+    ["First line", "“Nobody noticed the door until it opened.”"],
+    ["First line", "“I wasn’t supposed to keep it, but I did.”"],
+    ["First line", "“By morning, everything had changed colour.”"],
+    ["First line", "“She laughed, which was the first mistake.”"],
+    ["First line", "“The last page of the book was missing, so I wrote my own.”"],
+    ["First line", "“It had been raining for forty days when the first bird came back.”"],
+    ["First line", "“He kept the key for years before he found the lock.”"],
+    ["First line", "“On the third night, the stars began to rearrange themselves.”"],
+    ["First line", "“Nothing in the box was what the label said.”"],
+    ["First line", "“We agreed never to speak of that summer, which is why I am writing it down.”"],
+    ["First line", "“The note said, ‘Open this when you are brave,’ and I never was.”"],
+
+    ["Twist", "Write a scene using only dialogue."],
+    ["Twist", "Write about a goodbye without using the word “goodbye”."],
+    ["Twist", "Tell a whole story in exactly 100 words."],
+    ["Twist", "Write the same moment from two characters’ points of view."],
+    ["Twist", "Start with the ending and work backwards."],
+    ["Twist", "Tell a story through three letters."],
+    ["Twist", "Write a scene where the weather is the narrator."],
+    ["Twist", "Write a story where every sentence is one word longer than the last."],
+    ["Twist", "Describe a place using only sounds and smells."],
+    ["Twist", "Write a story where the villain wins and the reader is glad."],
+    ["Twist", "Retell a fairy tale from the point of view of an object in it."],
+    ["Twist", "Write a story with no names, only descriptions."],
+
+    ["Golden ticket", "Write anything you like, Baaba. No rules, no prompt, no pressure."],
+    ["Golden ticket", "Draw two more slips and weave both prompts into a single story."]
+  ];
+  var TOTAL = PROMPTS.length;
+  var KEY = "prompt-raffle-v1";
+
+  var state = { drawn: [], current: null };
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (saved && Array.isArray(saved.drawn)) {
+      var ok = saved.drawn.every(function (n) { return Number.isInteger(n) && n >= 0 && n < TOTAL; });
+      if (ok) {
+        state.drawn = saved.drawn.filter(function (n, i, a) { return a.indexOf(n) === i; });
+        state.current = (Number.isInteger(saved.current) && state.drawn.indexOf(saved.current) > -1) ? saved.current : null;
+      }
+    }
+  } catch (e) {}
+
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+  var el = {
+    slip: document.getElementById("slip"),
+    tag: document.getElementById("tag"),
+    num: document.getElementById("num"),
+    prompt: document.getElementById("prompt"),
+    hint: document.getElementById("hint"),
+    draw: document.getElementById("draw"),
+    left: document.getElementById("left"),
+    putback: document.getElementById("putback"),
+    history: document.getElementById("history"),
+    chips: document.getElementById("chips"),
+    reset: document.getElementById("reset")
+  };
+
+  var busy = false;
+  var resetArmed = false;
+  var resetTimer = null;
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function remaining() {
+    var r = [];
+    for (var i = 0; i < TOTAL; i++) if (state.drawn.indexOf(i) === -1) r.push(i);
+    return r;
+  }
+  function pick(list) { return list[Math.floor(Math.random() * list.length)]; }
+
+  function showSlip(i, animate) {
+    var p = PROMPTS[i];
+    el.slip.classList.toggle("golden", p[0] === "Golden ticket");
+    el.tag.textContent = p[0];
+    el.num.textContent = "No. " + (i + 1) + " of " + TOTAL;
+    el.prompt.textContent = p[1];
+    el.prompt.className = "prompt" + (p[0] === "First line" ? " first-line" : "");
+    el.hint.hidden = true;
+    if (animate) {
+      el.slip.classList.remove("reveal");
+      void el.slip.offsetWidth;
+      el.slip.classList.add("reveal");
+    }
+  }
+
+  function showEmptyJar() {
+    el.slip.classList.remove("golden", "reveal");
+    el.tag.textContent = "The jar";
+    el.num.textContent = "Empty";
+    el.prompt.className = "prompt empty";
+    el.prompt.textContent = "Every slip is drawn";
+    el.hint.hidden = false;
+    el.hint.textContent = "You have written your way through all fifty, Baaba. Start over to put them back in the jar.";
+  }
+
+  function showReady() {
+    el.slip.classList.remove("golden", "reveal");
+    el.tag.textContent = "The jar";
+    el.num.textContent = remaining().length + " slips";
+    el.prompt.className = "prompt empty";
+    el.prompt.textContent = "Ready when you are, Baaba";
+    el.hint.hidden = false;
+    el.hint.textContent = state.drawn.length
+      ? "Draw the next slip whenever you want a new start."
+      : "Draw a slip, Baaba, then write for as long as it holds you. There are no wrong answers.";
+  }
+
+  function renderHistory() {
+    el.chips.innerHTML = "";
+    state.drawn.forEach(function (i) {
+      var li = document.createElement("li");
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip" + (PROMPTS[i][0] === "Golden ticket" ? " gold" : "");
+      b.textContent = String(i + 1);
+      b.setAttribute("aria-label", "Read slip " + (i + 1) + ": " + PROMPTS[i][1]);
+      if (state.current === i) b.setAttribute("aria-current", "true");
+      b.addEventListener("click", function () {
+        state.current = i; save(); render(false);
+      });
+      li.appendChild(b);
+      el.chips.appendChild(li);
+    });
+  }
+
+  function render(animate) {
+    var left = remaining().length;
+    el.left.textContent = left === 1 ? "1 slip left in the jar" : left + " slips left in the jar";
+    el.history.hidden = state.drawn.length === 0;
+    document.getElementById("hist-title").textContent = state.drawn.length === 1 ? "Slip you have drawn" : "Slips you have drawn";
+    el.putback.hidden = state.current === null;
+    el.draw.disabled = left === 0 || busy;
+    el.draw.textContent = state.drawn.length ? "Draw another slip" : "Draw a slip";
+    if (state.current !== null) showSlip(state.current, animate);
+    else if (left === 0) showEmptyJar();
+    else showReady();
+    renderHistory();
+  }
+
+  function draw() {
+    if (busy) return;
+    var list = remaining();
+    if (!list.length) return;
+    var chosen = pick(list);
+    var finish = function () {
+      busy = false;
+      el.slip.classList.remove("shuffling");
+      state.drawn.push(chosen);
+      state.current = chosen;
+      save();
+      render(true);
+    };
+    if (reduce) { finish(); return; }
+    busy = true;
+    el.draw.disabled = true;
+    el.slip.classList.add("shuffling");
+    el.slip.classList.remove("golden");
+    el.tag.textContent = "Shuffling";
+    var ticks = 0;
+    var t = setInterval(function () {
+      el.num.textContent = "No. " + (Math.floor(Math.random() * TOTAL) + 1) + " of " + TOTAL;
+      ticks++;
+      if (ticks >= 12) { clearInterval(t); finish(); }
+    }, 60);
+  }
+
+  el.draw.addEventListener("click", draw);
+
+  el.putback.addEventListener("click", function () {
+    if (state.current === null) return;
+    state.drawn = state.drawn.filter(function (n) { return n !== state.current; });
+    state.current = null;
+    save();
+    render(false);
+  });
+
+  el.reset.addEventListener("click", function () {
+    if (!resetArmed) {
+      resetArmed = true;
+      el.reset.textContent = "Tap again to put all 50 back";
+      resetTimer = setTimeout(function () {
+        resetArmed = false;
+        el.reset.textContent = "Start over";
+      }, 4000);
+      return;
+    }
+    clearTimeout(resetTimer);
+    resetArmed = false;
+    el.reset.textContent = "Start over";
+    state = { drawn: [], current: null };
+    save();
+    render(false);
+  });
+
+  render(false);
+})();
+</script>
+
+</body>
+</html>
